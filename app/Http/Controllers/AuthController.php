@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\StoreUserRequest;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -14,14 +16,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Handle login request
-    public function login(Request $request)
+    // Handle login request with separate request validation
+    public function login(LoginRequest $request)
     {
-        // Validate login credentials
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        // Credentials are already validated by LoginRequest
+        $credentials = $request->validated(); // Get validated data
 
         // Attempt login
         if (Auth::attempt($credentials)) {
@@ -50,15 +49,11 @@ class AuthController extends Controller
         return view('inner-page', compact('users')); // Pass users to the view
     }
 
-    // Store a newly created user
-    public function store(Request $request)
+    // Store a newly created user with separate request handling
+    public function store(StoreUserRequest $request)
     {
-        // Validate incoming request data
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        // User data is already validated by StoreUserRequest
+        $validated = $request->validated(); // Get validated data
 
         // Create a new user
         User::create([
